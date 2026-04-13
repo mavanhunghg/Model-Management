@@ -56,6 +56,11 @@ public class ModelController {
         return ResponseEntity.ok(Map.of("message", "Model deleted successfully"));
     }
 
+    @PostMapping("/{id}/retrain")
+    public ResponseEntity<Model> retrain(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(modelService.retrain(id, body));
+    }
+
     @PatchMapping("/{id}/activate")
     public ResponseEntity<Model> activate(@PathVariable Long id) {
         return ResponseEntity.ok(modelService.activate(id));

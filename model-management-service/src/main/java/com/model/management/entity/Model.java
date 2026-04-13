@@ -58,6 +58,9 @@ public class Model {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
+    @Column(name = "parent_model_id")
+    private Long parentModelId;
+
     @JsonManagedReference
     @OneToMany(mappedBy = "model", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ModelArtifact> artifacts = new ArrayList<>();
@@ -133,6 +136,10 @@ public class Model {
         return artifacts;
     }
 
+    public Long getParentModelId() {
+        return parentModelId;
+    }
+
     public void setVersion(String version) {
         this.version = version;
     }
@@ -155,6 +162,10 @@ public class Model {
 
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public void setParentModelId(Long parentModelId) {
+        this.parentModelId = parentModelId;
     }
 
     public static final class Builder {
