@@ -3,12 +3,14 @@ package com.model.statistics.service;
 import com.model.statistics.entity.TrainingSession;
 import com.model.statistics.enums.TaskType;
 import com.model.statistics.enums.TrainingStatus;
+import com.model.statistics.enums.TrainingType;
 import com.model.statistics.repository.TrainingSessionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -39,6 +41,18 @@ public class TrainingSessionService {
                 .orElseThrow(() -> new IllegalArgumentException("Training session not found with id=" + id));
     }
 
+    public TrainingSession createInternal(Map<String, Object> body) {
+        TrainingSession session = new TrainingSession();
+        session.setModelId(requiredLong(body, "modelId"));
+        session.setDatasetId(requiredLong(body, "datasetId"));
+        session.setTaskType(requiredEnum(body, "taskType", TaskType.class));
+        session.setTrainingType(requiredEnum(body, "trainingType", TrainingType.class));
+        session.setStatus(requiredEnum(body, "status", TrainingStatus.class));
+        session.setConfig(optionalString(body, "config"));
+        session.setStartTime(LocalDateTime.now());
+        return trainingSessionRepository.save(session);
+    }
+
     public long totalSessions() {
         return trainingSessionRepository.count();
     }
@@ -64,5 +78,59 @@ public class TrainingSessionService {
                 "bestAccuracy", null,
                 "successRate", 0.0
         );
+    }
+
+    private String requiredString(Map<String, Object> body, String fieldName) {
+        if (!body.containsKey(fieldName)) {
+            throw new IllegalArgumentException("Missing required field: " + fieldName);
+        }
+        Object value = body.get(fieldName);
+        if (!(value instanceof String str) || str.trim().isEmpty()) {
+            throw new IllegalArgumentException("Invalid value for field: " + fieldName);
+        }
+        return str.trim();
+    }
+
+    private String optionalString(Map<String, Object> body, String fieldName) {
+        Object value = body.get(fieldName);
+        if (value == null) {
+            return "";
+        }
+        return String.valueOf(value);
+    }
+
+    private Long requiredLong(Map<String, Object> body, String fieldName) {
+        if (!body.containsKey(fieldName) || body.get(fieldName) == null) {
+            throw new IllegalArgumentException("Missing required field: " + fieldName);
+        }
+        Object value = body.get(fieldName);
+        if (value instanceof Number number) {
+            long longValue = number.longValue();
+            if (longValue <= 0) {
+                throw new IllegalArgumentException("Invalid value for field: " + fieldName);
+            }
+            return longValue;
+        }
+        if (value instanceof String str) {
+            try {
+                long longValue = Long.parseLong(str.trim());
+                if (longValue <= 0) {
+                    throw new IllegalArgumentException("Invalid value for field: " + fieldName);
+                }
+                return longValue;
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException("Invalid value for field: " + fieldName);
+            }
+        }
+        throw new IllegalArgumentException("Invalid value for field: " + fieldName);
+    }
+
+    private <E extends Enum<E>> E requiredEnum(Map<String, Object> body, String fieldName, Class<E> enumType) {
+        String raw = requiredString(body, fieldName);
+        try {
+            return Enum.valueOf(enumType, raw.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException("Invalid enum value for field: " + fieldName);
+        }
     }
 }

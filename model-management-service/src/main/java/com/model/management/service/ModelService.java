@@ -1,5 +1,7 @@
 package com.model.management.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.model.management.entity.Model;
 import com.model.management.enums.ModelStatus;
 import com.model.management.enums.TaskType;
@@ -17,16 +19,23 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class ModelService {
 
     private final ModelRepository modelRepository;
+    private final StatisticsInternalClient statisticsInternalClient;
+    private final ObjectMapper objectMapper;
 
-    public ModelService(ModelRepository modelRepository) {
+    public ModelService(
+            ModelRepository modelRepository,
+            StatisticsInternalClient statisticsInternalClient,
+            ObjectMapper objectMapper
+    ) {
         this.modelRepository = modelRepository;
+        this.statisticsInternalClient = statisticsInternalClient;
+        this.objectMapper = objectMapper;
     }
 
     public Page<Model> findAll(TaskType taskType, ModelStatus status, Pageable pageable) {
@@ -78,6 +87,9 @@ public class ModelService {
 
     public void softDelete(Long id) {
         Model model = findById(id);
+        if (model.getStatus() == ModelStatus.RETRAINING) {
+            throw new ConflictException("Cannot delete a model while retraining is in progress.");
+        }
         if (model.isActive()) {
             throw new ConflictException("Cannot delete an active model. Deactivate it first.");
         }
@@ -90,6 +102,9 @@ public class ModelService {
     @Transactional
     public Model activate(Long id) {
         Model target = findById(id);
+        if (target.getStatus() == ModelStatus.RETRAINING) {
+            throw new ConflictException("Cannot activate a model while retraining is in progress.");
+        }
 
         List<Model> currentActives = modelRepository.findByTaskTypeAndIsActiveTrueAndIsDeletedFalse(target.getTaskType());
         for (Model current : currentActives) {
@@ -105,9 +120,40 @@ public class ModelService {
 
     public Model deactivate(Long id) {
         Model model = findById(id);
+        if (model.getStatus() == ModelStatus.RETRAINING) {
+            throw new ConflictException("Cannot deactivate a model while retraining is in progress.");
+        }
         model.setActive(false);
         model.setStatus(ModelStatus.INACTIVE);
         return modelRepository.save(model);
+    }
+
+    @Transactional
+    public Model retrain(Long id, Map<String, Object> body) {
+        Model model = findById(id);
+        if (model.getStatus() == ModelStatus.RETRAINING) {
+            throw new ConflictException("Model is already retraining.");
+        }
+
+        Long datasetId = requiredLong(body, "datasetId");
+        Object configObject = body.getOrDefault("config", Map.of());
+        String configJson = toJson(configObject);
+
+        model.setStatus(ModelStatus.RETRAINING);
+        model.setActive(false);
+        Model savedModel = modelRepository.save(model);
+
+        Map<String, Object> trainingSessionBody = new LinkedHashMap<>();
+        trainingSessionBody.put("modelId", savedModel.getId());
+        trainingSessionBody.put("datasetId", datasetId);
+        trainingSessionBody.put("taskType", savedModel.getTaskType().name());
+        trainingSessionBody.put("trainingType", "RETRAIN");
+        trainingSessionBody.put("status", "PENDING");
+        trainingSessionBody.put("parentModelId", savedModel.getId());
+        trainingSessionBody.put("config", configJson);
+        statisticsInternalClient.createTrainingSession(trainingSessionBody);
+
+        return savedModel;
     }
 
     public Map<Long, String> getModelNames(Collection<Long> ids) {
@@ -157,6 +203,40 @@ public class ModelService {
             return Enum.valueOf(enumType, raw.trim().toUpperCase());
         } catch (IllegalArgumentException ex) {
             throw new BadRequestException("Invalid enum value for " + fieldName + ": " + raw);
+        }
+    }
+
+    private Long requiredLong(Map<String, Object> body, String fieldName) {
+        if (!body.containsKey(fieldName) || body.get(fieldName) == null) {
+            throw new BadRequestException("Missing required field: " + fieldName);
+        }
+        Object value = body.get(fieldName);
+        if (value instanceof Number number) {
+            long longValue = number.longValue();
+            if (longValue <= 0) {
+                throw new BadRequestException("Invalid value for field: " + fieldName);
+            }
+            return longValue;
+        }
+        if (value instanceof String str) {
+            try {
+                long longValue = Long.parseLong(str.trim());
+                if (longValue <= 0) {
+                    throw new BadRequestException("Invalid value for field: " + fieldName);
+                }
+                return longValue;
+            } catch (NumberFormatException ex) {
+                throw new BadRequestException("Invalid value for field: " + fieldName);
+            }
+        }
+        throw new BadRequestException("Invalid value for field: " + fieldName);
+    }
+
+    private String toJson(Object value) {
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (JsonProcessingException ex) {
+            throw new BadRequestException("Invalid value for field: config");
         }
     }
 }

@@ -147,4 +147,64 @@ public class TrainingSession {
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
+
+    public void setModelId(Long modelId) {
+        this.modelId = modelId;
+    }
+
+    public void setDatasetId(Long datasetId) {
+        this.datasetId = datasetId;
+    }
+
+    public void setTaskType(TaskType taskType) {
+        this.taskType = taskType;
+    }
+
+    public void setTrainingType(TrainingType trainingType) {
+        this.trainingType = trainingType;
+    }
+
+    public void setStatus(TrainingStatus status) {
+        this.status = status;
+    }
+
+    public void setAccuracy(Float accuracy) {
+        this.accuracy = accuracy;
+    }
+
+    public void setLoss(Float loss) {
+        this.loss = loss;
+    }
+
+    public void setPrecision(Float precision) {
+        this.precision = precision;
+    }
+
+    public void setRecall(Float recall) {
+        this.recall = recall;
+    }
+
+    public void setF1Score(Float f1Score) {
+        this.f1Score = f1Score;
+    }
+
+    public void setDurationSeconds(Long durationSeconds) {
+        this.durationSeconds = durationSeconds;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setConfig(String config) {
+        this.config = config;
+    }
+
+    public void setTrainLogPath(String trainLogPath) {
+        this.trainLogPath = trainLogPath;
+    }
 }
