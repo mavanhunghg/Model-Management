@@ -26,6 +26,9 @@ public class TrainingSession {
     @Column(name = "dataset_id", nullable = false)
     private Long datasetId;
 
+    @Column(name = "parent_model_id")
+    private Long parentModelId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "task_type", nullable = false)
     private TaskType taskType;
@@ -86,6 +89,10 @@ public class TrainingSession {
 
     public Long getDatasetId() {
         return datasetId;
+    }
+
+    public Long getParentModelId() {
+        return parentModelId;
     }
 
     public TaskType getTaskType() {
@@ -154,6 +161,10 @@ public class TrainingSession {
 
     public void setDatasetId(Long datasetId) {
         this.datasetId = datasetId;
+    }
+
+    public void setParentModelId(Long parentModelId) {
+        this.parentModelId = parentModelId;
     }
 
     public void setTaskType(TaskType taskType) {

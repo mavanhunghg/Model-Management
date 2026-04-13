@@ -45,6 +45,7 @@ public class TrainingSessionService {
         TrainingSession session = new TrainingSession();
         session.setModelId(requiredLong(body, "modelId"));
         session.setDatasetId(requiredLong(body, "datasetId"));
+        session.setParentModelId(optionalLong(body, "parentModelId"));
         session.setTaskType(requiredEnum(body, "taskType", TaskType.class));
         session.setTrainingType(requiredEnum(body, "trainingType", TrainingType.class));
         session.setStatus(requiredEnum(body, "status", TrainingStatus.class));
@@ -96,7 +97,25 @@ public class TrainingSessionService {
         if (value == null) {
             return "";
         }
-        return String.valueOf(value);
+        return String.valueOf(value).trim();
+    }
+
+    private Long optionalLong(Map<String, Object> body, String fieldName) {
+        if (!body.containsKey(fieldName) || body.get(fieldName) == null) {
+            return null;
+        }
+        Object value = body.get(fieldName);
+        if (value instanceof Number number) {
+            return number.longValue();
+        }
+        if (value instanceof String str) {
+            try {
+                return Long.parseLong(str.trim());
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException("Invalid value for field: " + fieldName);
+            }
+        }
+        throw new IllegalArgumentException("Invalid value for field: " + fieldName);
     }
 
     private Long requiredLong(Map<String, Object> body, String fieldName) {
