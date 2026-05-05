@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -71,14 +72,14 @@ public class TrainingSessionService {
     }
 
     public Map<String, Object> emptySummary() {
-        return Map.of(
-                "totalSessions", 0,
-                "totalDurationSeconds", 0,
-                "bestModelId", null,
-                "bestModelName", null,
-                "bestAccuracy", null,
-                "successRate", 0.0
-        );
+        Map<String, Object> map = new HashMap<>();
+        map.put("totalSessions", 0);
+        map.put("totalDurationSeconds", 0);
+        map.put("bestModelId", null);
+        map.put("bestModelName", null);
+        map.put("bestAccuracy", null);
+        map.put("successRate", 0.0);
+        return map;
     }
 
     private String requiredString(Map<String, Object> body, String fieldName) {

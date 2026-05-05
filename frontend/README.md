@@ -1,16 +1,37 @@
-# React + Vite
+# Frontend - QuanLyMoHinh
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend duoc tach theo service de mapping truc tiep voi backend:
 
-Currently, two official plugins are available:
+- `src/modules/api-gateway`: client request chung + component UI dung chung cho giao tiep API
+- `src/modules/model-management-service`: page/hook/api/components cho quan ly model
+- `src/modules/statistics-service`: page/hook/api/components cho thong ke model
+- `src/shared`: constants va utility dung chung
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Cau truc chinh
 
-## React Compiler
+```text
+src/
+  App.jsx
+  modules/
+	api-gateway/
+	model-management-service/
+	statistics-service/
+  shared/
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Chay du an
 
-## Expanding the ESLint configuration
+```cmd
+npm install
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Kiem tra chat luong
+
+```cmd
+npm run lint
+npm run build
+```
+
+Mac dinh frontend goi API qua `VITE_API_BASE_URL`.
+Neu khong khai bao bien moi truong nay, gia tri fallback la `http://localhost:8080`.
