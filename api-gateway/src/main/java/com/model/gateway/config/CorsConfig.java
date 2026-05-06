@@ -16,10 +16,7 @@ public class CorsConfig {
         corsConfig.addAllowedOrigin("http://localhost:5173");
         corsConfig.addAllowedHeader("*");
         corsConfig.addAllowedMethod("GET");
-        corsConfig.addAllowedMethod("POST");
         corsConfig.addAllowedMethod("PUT");
-        corsConfig.addAllowedMethod("DELETE");
-        corsConfig.addAllowedMethod("PATCH");
         corsConfig.addAllowedMethod("OPTIONS");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

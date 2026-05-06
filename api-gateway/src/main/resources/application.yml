@@ -11,9 +11,7 @@ spring:
               - "http://localhost:5173"
             allowedMethods:
               - GET
-              - POST
               - PUT
-              - DELETE
               - OPTIONS
             allowedHeaders: "*"
             allowCredentials: true
@@ -22,7 +20,3 @@ spring:
           uri: ${MODEL_MANAGEMENT_BASE_URL:http://localhost:8081}
           predicates:
             - Path=/api/models/**
-        - id: statistics-route
-          uri: ${STATISTICS_BASE_URL:http://localhost:8082}
-          predicates:
-            - Path=/api/statistics/**

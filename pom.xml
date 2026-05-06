@@ -20,7 +20,6 @@
     <modules>
         <module>api-gateway</module>
         <module>model-management-service</module>
-        <module>statistics-service</module>
     </modules>
 
     <properties>
