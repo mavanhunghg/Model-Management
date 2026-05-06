@@ -1,4 +1,4 @@
-package com.model.management.enums;
+package com.management.enums;
 
 public enum TaskType {
     CLASSIFICATION,

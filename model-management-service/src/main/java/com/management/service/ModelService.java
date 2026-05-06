@@ -1,9 +1,9 @@
-package com.model.management.service;
+package com.management.service;
 
-import com.model.management.entity.Model;
-import com.model.management.enums.ModelStatus;
-import com.model.management.enums.TaskType;
-import com.model.management.repository.ModelRepository;
+import com.management.entity.Model;
+import com.management.enums.ModelStatus;
+import com.management.enums.TaskType;
+import com.management.repository.ModelRepository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 

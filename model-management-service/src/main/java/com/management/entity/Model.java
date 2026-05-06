@@ -1,7 +1,7 @@
-package com.model.management.entity;
+package com.management.entity;
 
-import com.model.management.enums.ModelStatus;
-import com.model.management.enums.TaskType;
+import com.management.enums.ModelStatus;
+import com.management.enums.TaskType;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

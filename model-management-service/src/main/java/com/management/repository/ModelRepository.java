@@ -1,6 +1,6 @@
-package com.model.management.repository;
+package com.management.repository;
 
-import com.model.management.entity.Model;
+import com.management.entity.Model;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

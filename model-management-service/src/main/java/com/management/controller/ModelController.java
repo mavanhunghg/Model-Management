@@ -1,9 +1,9 @@
-package com.model.management.controller;
+package com.management.controller;
 
-import com.model.management.entity.Model;
-import com.model.management.enums.ModelStatus;
-import com.model.management.enums.TaskType;
-import com.model.management.service.ModelService;
+import com.management.entity.Model;
+import com.management.enums.ModelStatus;
+import com.management.enums.TaskType;
+import com.management.service.ModelService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
